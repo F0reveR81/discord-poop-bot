@@ -16,19 +16,19 @@ BOT_OWNER_ID = 739297622204088360
 GUILD_ID = 1357348274159354136
 GUILD_OBJECT = discord.Object(id=GUILD_ID)
 
-# ====== 事件：Bot 啟動 ======
+# ====== ✅ 正確的 on_ready 事件 ======
+@bot.event
 async def on_ready():
     print(f'✅ Logged in as {bot.user}')
 
     try:
-        # 只註冊到特定伺服器（避免重複）
-        bot.tree.clear_commands()  # 清除原本所有註冊（避免殘留）
-        await bot.tree.sync(guild=GUILD_OBJECT)
+        bot.tree.clear_commands()  # 清除暫存，防止重複
+        await bot.tree.sync(guild=GUILD_OBJECT)  # 只同步到你的伺服器
         print("✅ Slash 指令已同步到你的伺服器（不含全域）！")
     except Exception as e:
         print(f"❌ 同步失敗: {e}")
 
-# ====== 事件：收到訊息時的處理 ======
+# ====== 收到訊息時的處理 ======
 @bot.event
 async def on_message(message):
     if message.author == bot.user:
@@ -36,14 +36,12 @@ async def on_message(message):
 
     user_id = str(message.author.id)
 
-    # 💩 統計
     if '💩' in message.content:
         poop_counts[user_id] = poop_counts.get(user_id, 0) + message.content.count('💩')
         await message.channel.send(f"<@{user_id}> 你這個月已經拉了 {poop_counts[user_id]} 次 💩！")
 
-    # 問號圖片回應
     if "？" in message.content or "?" in message.content:
-        embed = discord.Embed(title="你問號了嗎？")
+        embed = discord.Embed(title="")
         embed.set_image(url="https://img12.pixhost.to/images/1542/585916625_d0ef2a7e-cafa-4635-b163-87e0101169c0.jpg")
         await message.channel.send(embed=embed)
 
