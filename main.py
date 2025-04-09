@@ -17,12 +17,14 @@ GUILD_ID = 1357348274159354136
 GUILD_OBJECT = discord.Object(id=GUILD_ID)
 
 # ====== 事件：Bot 啟動 ======
-@bot.event
 async def on_ready():
     print(f'✅ Logged in as {bot.user}')
+
     try:
+        # 只註冊到特定伺服器（避免重複）
+        bot.tree.clear_commands()  # 清除原本所有註冊（避免殘留）
         await bot.tree.sync(guild=GUILD_OBJECT)
-        print("✅ Slash 指令已同步到你的伺服器！")
+        print("✅ Slash 指令已同步到你的伺服器（不含全域）！")
     except Exception as e:
         print(f"❌ 同步失敗: {e}")
 
