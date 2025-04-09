@@ -29,9 +29,10 @@ async def on_message(message):
         poop_counts[user_id] = poop_counts.get(user_id, 0) + message.content.count('💩')
         await message.channel.send(f"<@{user_id}> 你這個月已經拉了  {poop_counts[user_id]}  次 💩！")
 
+    if message.content.strip() == "？":
+       await message.channel.send("", embed=discord.Embed().set_image(url="https://img12.pixhost.to/images/1542/585916625_d0ef2a7e-cafa-4635-b163-87e0101169c0.jpg"))
     if message.content.strip() == "?":
        await message.channel.send("", embed=discord.Embed().set_image(url="https://img12.pixhost.to/images/1542/585916625_d0ef2a7e-cafa-4635-b163-87e0101169c0.jpg"))
-
     await bot.process_commands(message)
 
 
