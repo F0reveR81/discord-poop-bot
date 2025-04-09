@@ -9,6 +9,8 @@ intents.message_content = True
 bot = commands.Bot(command_prefix='/', intents=intents)
 poop_counts = {}
 
+BOT_OWNER_ID = 123456789012345678 
+
 @bot.event
 async def on_ready():
     print(f'Logged in as {bot.user}')
@@ -60,10 +62,18 @@ async def all_command(interaction: discord.Interaction):
     embed.description = "\n".join(description_lines)
     await interaction.response.send_message(embed=embed)
 
-# reset 指令維持為 prefix 指令
 @bot.tree.command(name="reset", description="重置所有 💩 統計資料")
 async def reset_command(interaction: discord.Interaction):
     poop_counts.clear()
     await interaction.response.send_message("所有 💩 統計已重置！")
 
+@bot.tree.command(name="set", description="設定特定使用者的 💩 次數（僅限擁有者使用）")
+@app_commands.describe(user="要設定的使用者", count="次數")
+async def set_command(interaction: discord.Interaction, user: discord.User, count: int):
+    if interaction.user.id != BOT_OWNER_ID:
+        await interaction.response.send_message("你沒有權限使用這個指令！", ephemeral=True)
+        return
+
+    poop_counts[str(user.id)] = count
+    await interaction.response.send_message(f"已將 <@{user.id}> 的 💩 次數設為 {count} 次！")
 bot.run(os.getenv("DISCORD_BOT_TOKEN"))
