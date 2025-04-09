@@ -9,7 +9,9 @@ intents.message_content = True
 bot = commands.Bot(command_prefix='/', intents=intents)
 poop_counts = {}
 
-BOT_OWNER_ID = 123456789012345678 
+BOT_OWNER_ID = 739297622204088360
+ 
+ 
 
 @bot.event
 async def on_ready():
