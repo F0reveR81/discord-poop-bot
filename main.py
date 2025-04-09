@@ -9,9 +9,8 @@ intents.message_content = True
 bot = commands.Bot(command_prefix='/', intents=intents)
 poop_counts = {}
 
+# 你的 Discord 使用者 ID（只有你能使用 /set 指令）
 BOT_OWNER_ID = 739297622204088360
- 
- 
 
 @bot.event
 async def on_ready():
@@ -29,16 +28,18 @@ async def on_message(message):
 
     user_id = str(message.author.id)
 
+    # 💩 統計
     if '💩' in message.content:
         poop_counts[user_id] = poop_counts.get(user_id, 0) + message.content.count('💩')
         await message.channel.send(f"<@{user_id}> 你這個月已經拉了  {poop_counts[user_id]}  次 💩！")
 
-    if message.content.strip() == "？":
-       await message.channel.send("", embed=discord.Embed().set_image(url="https://img12.pixhost.to/images/1542/585916625_d0ef2a7e-cafa-4635-b163-87e0101169c0.jpg"))
-    if message.content.strip() == "?":
-       await message.channel.send("", embed=discord.Embed().set_image(url="https://img12.pixhost.to/images/1542/585916625_d0ef2a7e-cafa-4635-b163-87e0101169c0.jpg"))
-    await bot.process_commands(message)
+    # 傳送問號圖片（包含「？」或「?」）
+    if "？" in message.content or "?" in message.content:
+        embed = discord.Embed(title="")
+        embed.set_image(url="https://img12.pixhost.to/images/1542/585916625_d0ef2a7e-cafa-4635-b163-87e0101169c0.jpg")
+        await message.channel.send(embed=embed)
 
+    await bot.process_commands(message)
 
 @bot.tree.command(name="all", description="查看 💩 傳送次數排行榜")
 async def all_command(interaction: discord.Interaction):
@@ -78,4 +79,6 @@ async def set_command(interaction: discord.Interaction, user: discord.User, coun
 
     poop_counts[str(user.id)] = count
     await interaction.response.send_message(f"已將 <@{user.id}> 的 💩 次數設為 {count} 次！")
+
+# 啟動 Bot
 bot.run(os.getenv("DISCORD_BOT_TOKEN"))
