@@ -2,6 +2,10 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 import os
+from dotenv import load_dotenv
+
+# 載入 .env 中的變數
+load_dotenv()
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -10,7 +14,7 @@ bot = commands.Bot(command_prefix='/', intents=intents)
 poop_counts = {}
 
 # 你的 Discord 使用者 ID（只有你能使用 /set 指令）
-BOT_OWNER_ID = 739297622204088360
+BOT_OWNER_ID = 739297622204088360  # ⬅️ 請確認這是你自己 ID
 
 @bot.event
 async def on_ready():
@@ -35,7 +39,7 @@ async def on_message(message):
 
     # 傳送問號圖片（包含「？」或「?」）
     if "？" in message.content or "?" in message.content:
-        embed = discord.Embed(title="")
+        embed = discord.Embed(title="你問號了嗎？")
         embed.set_image(url="https://img12.pixhost.to/images/1542/585916625_d0ef2a7e-cafa-4635-b163-87e0101169c0.jpg")
         await message.channel.send(embed=embed)
 
@@ -70,15 +74,22 @@ async def reset_command(interaction: discord.Interaction):
     poop_counts.clear()
     await interaction.response.send_message("所有 💩 統計已重置！")
 
+@bot.tree.command(name="whoami", description="顯示你的 Discord 使用者 ID（除錯用）")
+async def whoami_command(interaction: discord.Interaction):
+    await interaction.response.send_message(f"你的使用者 ID 是：`{interaction.user.id}`", ephemeral=True)
+
 @bot.tree.command(name="set", description="設定特定使用者的 💩 次數（僅限擁有者使用）")
 @app_commands.describe(user="要設定的使用者", count="次數")
 async def set_command(interaction: discord.Interaction, user: discord.User, count: int):
+    print(f"[SET] 指令呼叫者 ID: {interaction.user.id}")
+    print(f"[SET] 預期擁有者 ID: {BOT_OWNER_ID}")
+
     if interaction.user.id != BOT_OWNER_ID:
         await interaction.response.send_message("你沒有權限使用這個指令！", ephemeral=True)
         return
 
     poop_counts[str(user.id)] = count
-    await interaction.response.send_message(f"已將 <@{user.id}> 的 💩 次數設為 {count} 次！")
+    await interaction.response.send_message(f"✅ 已將 <@{user.id}> 的 💩 次數設為 {count} 次！")
 
-# 啟動 Bot
+# 啟動 Bot（從 .env 載入 token）
 bot.run(os.getenv("DISCORD_BOT_TOKEN"))
